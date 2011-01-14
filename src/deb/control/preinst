@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+rm -rf /usr/share/ircensus/lib/*.jar
+exit 0
