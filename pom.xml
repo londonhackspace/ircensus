@@ -64,6 +64,15 @@
               </mapper>
             </data>
             <data>
+              <src>${project.basedir}/src/main/sh</src>
+              <includes>ircensus</includes>
+              <mapper>
+                <type>perm</type>
+                <strip>1</strip>
+                <prefix>/etc/init.d</prefix>
+              </mapper>
+            </data>
+            <data>
               <src>${project.build.directory}/dependency</src>
               <includes>*.jar</includes>
               <mapper>
