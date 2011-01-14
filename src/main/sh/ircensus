@@ -1,0 +1,142 @@
+#!/bin/bash
+
+set -e
+#change to project specific settings
+NAME=ircensus
+BOOTSTRAP_CLASS=uk.org.hackspace.ircensus.IrcCensusDaemon
+PROJECT_USER=ircensus
+PROJECT_HOME=/usr/local/$NAME
+PROJECT_PID="/var/run/$NAME/$NAME.pid"
+if [ ! -d "/var/run/$NAME" ]; then
+ mkdir -p /var/run/$NAME
+fi
+PROJECT_CONF="/etc/$NAME"
+LOG_FILE=/var/log/$NAME/$NAME.log
+
+#optional ADDITIONAL_CLASSPATH is provided to allow for custom config to override general
+if [ $ADDITIONAL_CLASSPATH ]; then
+  JSVC_CLASSPATH=$ADDITIONAL_CLASSPATH
+fi
+#optional ADDITIONAL_LIB_FOLDER will put all jars in this folder on the classpath
+if [ $ADDITIONAL_LIB_FOLDER ]; then
+  JSVC_CLASSPATH=$JSVC_CLASSPATH:`ls -1 $ADDITIONAL_LIB_FOLDER/*.jar | tr '\n' :`
+fi
+
+JSVC_CLASSPATH=$JSVC_CLASSPATH:$PROJECT_CONF:`ls -1 $PROJECT_HOME/lib/*.jar | tr '\n' :`
+JAVA_OPTS="-Dircensus.config.file=$PROJECT_CONF/ircensus.xml"
+
+#echo $JSVC_CLASSPATH
+
+DAEMON=/usr/bin/jsvc
+
+. /lib/lsb/init-functions
+. /etc/default/rcS
+
+# The first existing directory is used for JAVA_HOME (if JAVA_HOME is not
+# defined in $DEFAULT)
+JDK_DIRS="/usr/lib/jvm/java-6-sun"
+
+# Look for the right JVM to use
+for jdir in $JDK_DIRS; do
+    if [ -r "$jdir/bin/java" -a -z "${JAVA_HOME}" ]; then
+	JAVA_HOME_TMP="$jdir"
+	# checks for a real JDK like environment, needed to check if 
+	# really the java-gcj-compat-dev package is installed
+	if [ -r "$jdir/bin/jdb" ]; then
+	    JAVA_HOME="$JAVA_HOME_TMP"
+	fi
+    fi
+done
+export JAVA_HOME
+
+if [ ! -f $DAEMON ]; then
+  log_failure_msg "$DAEMON not found, install jsvc"
+  exit 1
+fi
+
+case "$1" in
+  start)
+	if [ -z "$JAVA_HOME" ]; then
+		log_failure_msg "no JDK found - please set JAVA_HOME"
+		exit 1
+	fi
+
+	log_daemon_msg "Starting $NAME" "$NAME"
+	if start-stop-daemon --test --start --pidfile "$PROJECT_PID" \
+		--user $PROJECT_USER --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+
+		$DAEMON -home $JAVA_HOME -user "$PROJECT_USER" -cp "$JSVC_CLASSPATH" -outfile $LOG_FILE -errfile $LOG_FILE -pidfile "$PROJECT_PID" $JAVA_OPTS "$BOOTSTRAP_CLASS"
+	else
+	        log_progress_msg "Already running"
+	fi
+	log_end_msg 0
+	;;
+  profile)
+	if [ -z "$JAVA_HOME" ]; then
+		log_failure_msg "no JDK found - please set JAVA_HOME"
+		exit 1
+	fi
+	
+	JAVA_OPTS="-agentpath:/pellegrino/yjp-9.0.8/bin/linux-x86-64/libyjpagent.so=port=12345 $JAVA_OPTS"
+
+	log_daemon_msg "Starting $NAME" "$NAME"
+	if start-stop-daemon --test --start --pidfile "$PROJECT_PID" \
+		--user $PROJECT_USER --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+
+		$DAEMON -home $JAVA_HOME -user "$PROJECT_USER" -cp "$JSVC_CLASSPATH" -outfile $LOG_FILE -errfile $LOG_FILE -pidfile "$PROJECT_PID" $JAVA_OPTS "$BOOTSTRAP_CLASS"
+	else
+	        log_progress_msg "Already running"
+	fi
+	log_end_msg 0
+	;;
+  stop)
+	log_daemon_msg "Stopping $NAME" "$NAME"
+        if start-stop-daemon --test --start --pidfile "$PROJECT_PID" \
+		--user "$PROJECT_USER" --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+		log_progress_msg "(not running)"
+	else
+		$DAEMON -cp "$JSVC_CLASSPATH" -pidfile "$PROJECT_PID" \
+		     -stop "$BOOTSTRAP_CLASS"
+	fi
+	log_end_msg 0
+	;;
+   status)
+        if start-stop-daemon --test --start --pidfile "$PROJECT_PID" \
+		--user $PROJECT_USER --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+
+		if [ -f "$PROJECT_PID" ]; then
+		    log_success_msg "$NAME is not running, but pid file exists."
+		else
+		    log_success_msg "$NAME is not running."
+		fi
+	else
+		log_success_msg "$NAME is running with pid `cat $PROJECT_PID`"
+	fi
+        ;;
+  restart|force-reload)
+        if start-stop-daemon --test --stop --pidfile "$PROJECT_PID" \
+		--user $PROJECT_USER --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+		$0 stop
+		sleep 1
+	fi
+	$0 start
+	;;
+  try-restart)
+        if start-stop-daemon --test --start --pidfile "$PROJECT_PID" \
+		--user $PROJECT_USER --startas "$JAVA_HOME/bin/java" \
+		>/dev/null; then
+		$0 start
+	fi
+        ;;
+  *)
+	log_success_msg "Usage: $0 {start|stop|restart|try-restart|force-reload|status}"
+	exit 1
+	;;
+esac
+
+exit 0

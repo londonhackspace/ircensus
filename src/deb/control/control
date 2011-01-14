@@ -1,0 +1,9 @@
+Package: ircensus
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: sun-java6-jdk, jsvc
+Maintainer: Elliot West <teabot@gmail.com>
+Description: irc statistics gathering bot
+Distribution: development
