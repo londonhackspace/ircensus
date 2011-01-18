@@ -1,0 +1,17 @@
+#!/bin/sh
+echo useradd ircensus
+useradd ircensus
+
+echo mkdir /var/log/ircensus
+mkdir /var/log/ircensus
+
+echo chown ircensus /var/log/ircensus
+chown ircensus /var/log/ircensus
+
+echo chmod u+x /etc/init.d/ircensus
+chmod u+x /etc/init.d/ircensus
+
+echo chmod u+x /usr/share/ircensus/bin/ircensus
+chmod u+x /usr/share/ircensus/bin/ircensus
+
+exit 0

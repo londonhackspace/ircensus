@@ -5,7 +5,7 @@ set -e
 NAME=ircensus
 BOOTSTRAP_CLASS=uk.org.hackspace.ircensus.IrcCensusDaemon
 PROJECT_USER=ircensus
-PROJECT_HOME=/usr/local/$NAME
+PROJECT_HOME=/usr/share/$NAME
 PROJECT_PID="/var/run/$NAME/$NAME.pid"
 if [ ! -d "/var/run/$NAME" ]; then
  mkdir -p /var/run/$NAME
