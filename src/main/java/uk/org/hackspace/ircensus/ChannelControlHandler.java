@@ -1,6 +1,11 @@
 package uk.org.hackspace.ircensus;
 
-public class ChannelControlHandler extends AbstractIrcHandler {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+class ChannelControlHandler extends AbstractIrcHandler {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ChannelControlHandler.class);
 
     public ChannelControlHandler(IrcClient ircClient) {
         super(ircClient);
@@ -8,36 +13,49 @@ public class ChannelControlHandler extends AbstractIrcHandler {
 
     @Override
     public String executeCommand(String method, String[] tokens, String sender) {
+        String response;
         if ("join".equals(method)) {
-            return commandJoinChannel(tokens);
+            response = commandJoinChannel(tokens);
         } else if ("leave".equals(method)) {
-            return commandLeaveChannel(tokens);
+            response = commandLeaveChannel(tokens);
         } else if ("channels".equals(method)) {
-            return commandChannels();
+            response = commandChannels();
+            LOG.debug(response);
         } else {
-            return "Unrecognized command: " + method;
+            response = "Unrecognized command: " + method;
+            LOG.debug(response);
         }
+        return response;
     }
 
     private String commandJoinChannel(String[] tokens) {
+        String response;
         if (tokens.length == 1) {
             ircClient.joinChannel(tokens[0]);
-            return "Joined channel: " + tokens[0];
+            response = "Joined channel: " + tokens[0];
+            LOG.info(response);
         } else if (tokens.length == 2) {
             ircClient.joinChannel(tokens[0], tokens[1]);
-            return "Joined channel: " + tokens[0];
+            response = "Joined channel: " + tokens[0];
+            LOG.info(response);
         } else {
-            return "Usage: join <channel> [<password>]";
+            response = "Usage: join <channel> [<password>]";
+            LOG.debug(response);
         }
+        return response;
     }
 
     private String commandLeaveChannel(String[] tokens) {
+        String response;
         if (tokens.length == 1) {
             ircClient.partChannel(tokens[0]);
-            return "Left channel: " + tokens[0];
+            response = "Left channel: " + tokens[0];
+            LOG.info(response);
         } else {
-            return "Usage: leave <channel>";
+            response = "Usage: leave <channel>";
+            LOG.debug(response);
         }
+        return response;
     }
 
     private String commandChannels() {
@@ -52,7 +70,8 @@ public class ChannelControlHandler extends AbstractIrcHandler {
             }
             builder.append(channel);
         }
-        return builder.toString();
+        String response = builder.toString();
+        return response;
     }
 
 }
