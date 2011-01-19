@@ -1,4 +1,6 @@
 #!/bin/sh
 set -e
+echo Removing existing jars...
 rm -rf /usr/share/ircensus/lib/*.jar
+echo Removed existing jars
 exit 0
