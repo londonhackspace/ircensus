@@ -25,6 +25,10 @@ public class ServerStatistics {
     startPurgeScheduler();
   }
 
+  public void join(String channel) {
+    getStatisticsForChannel(channel);
+  }
+
   public void message(String channel, String user) {
     ChannelStatistics statistics = getStatisticsForChannel(channel);
     statistics.message(user);

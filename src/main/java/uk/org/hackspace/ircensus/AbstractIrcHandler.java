@@ -30,6 +30,10 @@ abstract public class AbstractIrcHandler implements IrcHandler {
   }
 
   @Override
+  public void onJoin(String channel, String sender, String login, String hostname) {
+  }
+
+  @Override
   public String executeCommand(String method, String[] tokens, String sender) {
     return null;
   }

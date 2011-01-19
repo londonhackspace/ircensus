@@ -7,7 +7,6 @@ import uk.org.hackspace.ircensus.AbstractIrcHandler;
 import uk.org.hackspace.ircensus.IrcClient;
 import uk.org.hackspace.ircensus.IrcHandler;
 
-
 public class ServerStatisticsHandler extends AbstractIrcHandler implements IrcHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(ServerStatisticsHandler.class);
@@ -41,6 +40,12 @@ public class ServerStatisticsHandler extends AbstractIrcHandler implements IrcHa
       LOG.debug("Asked for stats by {} - responded with: {}", sender, response);
     }
     return response;
+  }
+
+  @Override
+  public void onJoin(String channel, String sender, String login, String hostname) {
+    statistics.join(channel);
+    LOG.debug("Informed statistics that we joined channel '{}'", channel);
   }
 
   private boolean isMessageFromTrustedUser(String channel, String sender, String message) {

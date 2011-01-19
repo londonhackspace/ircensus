@@ -110,6 +110,13 @@ public class IrcClient extends PircBot {
     }
   }
 
+  @Override
+  protected void onJoin(String channel, String sender, String login, String hostname) {
+    for (IrcHandler handler : handlers) {
+      handler.onJoin(channel, sender, login, hostname);
+    }
+  }
+
   /*
    * Basic built-in command processing allows you to instruct the bot at runtime to join/leave channels etc
    */

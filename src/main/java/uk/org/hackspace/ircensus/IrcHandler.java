@@ -15,4 +15,6 @@ public interface IrcHandler {
 
   String executeCommand(String method, String tokens[], String sender);
 
+  void onJoin(String channel, String sender, String login, String hostname);
+
 }

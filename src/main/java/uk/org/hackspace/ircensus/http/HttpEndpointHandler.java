@@ -2,7 +2,6 @@ package uk.org.hackspace.ircensus.http;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import org.mortbay.jetty.handler.AbstractHandler;
 
 import uk.org.hackspace.ircensus.stats.ChannelStatistics;
 import uk.org.hackspace.ircensus.stats.ServerStatistics;
-
 
 public class HttpEndpointHandler extends AbstractHandler {
 
@@ -32,26 +30,12 @@ public class HttpEndpointHandler extends AbstractHandler {
 
     PrintWriter writer = response.getWriter();
 
-    boolean first = true;
-    for (Entry<String, ChannelStatistics> channel : serverStatistics.getStatisticsByChannel().entrySet()) {
-      ChannelStatistics channelStatistics = channel.getValue();
-      String channelName = channel.getKey().substring(1);
-      if (first) {
-        first = false;
-      } else {
-        writer.print(" ");
+    if (target.length() > 1) {
+      String channelName = "#" + target.substring(1);
+      ChannelStatistics channelStatistics = serverStatistics.getStatisticsByChannel().get(channelName);
+      if (channelStatistics != null) {
+        writeChannelStatistics(writer, channelName, channelStatistics);
       }
-      writer.print(channelName);
-      writer.print("Messages:");
-      writer.print(channelStatistics.getMessageCount());
-      writer.print(" ");
-      writer.print(channelName);
-      writer.print("ActiveUsers:");
-      writer.print(channelStatistics.getActiveUserCount());
-      writer.print(" ");
-      writer.print(channelName);
-      writer.print("TotalUsers:");
-      writer.print(channelStatistics.getTotalUserCount());
     }
 
     Request baseRequest;
@@ -61,6 +45,20 @@ public class HttpEndpointHandler extends AbstractHandler {
       baseRequest = HttpConnection.getCurrentConnection().getRequest();
     }
     baseRequest.setHandled(true);
+  }
+
+  private void writeChannelStatistics(PrintWriter writer, String channelName, ChannelStatistics channelStatistics) {
+    writer.print(channelName.substring(1));
+    writer.print("Messages:");
+    writer.print(channelStatistics.getMessageCount());
+    writer.print(" ");
+    writer.print(channelName.substring(1));
+    writer.print("ActiveUsers:");
+    writer.print(channelStatistics.getActiveUserCount());
+    writer.print(" ");
+    writer.print(channelName.substring(1));
+    writer.print("TotalUsers:");
+    writer.print(channelStatistics.getTotalUserCount());
   }
 
 }
