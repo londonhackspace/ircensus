@@ -20,4 +20,13 @@ chmod u+x /etc/init.d/ircensus
 echo chmod u+x /usr/share/ircensus/bin/ircensus
 chmod u+x /usr/share/ircensus/bin/ircensus
 
+echo ln -s /etc/init.d/ircensus /etc/rc0.d/K97ircensus
+ln -s /etc/init.d/ircensus /etc/rc0.d/K97ircensus
+
+echo ln -s /etc/init.d/ircensus /etc/rc3.d/S97ircensus
+ln -s /etc/init.d/ircensus /etc/rc3.d/S97ircensus
+
+echo ln -s /etc/init.d/ircensus /etc/rc6.d/K97ircensus
+ln -s /etc/init.d/ircensus /etc/rc6.d/K97ircensus
+
 exit 0
