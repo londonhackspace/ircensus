@@ -5,8 +5,14 @@ useradd ircensus
 echo mkdir /var/log/ircensus
 mkdir /var/log/ircensus
 
-echo chown ircensus /var/log/ircensus
-chown ircensus /var/log/ircensus
+echo touch ircensus /var/log/ircensus/ircensus.log
+touch ircensus /var/log/ircensus/ircensus.log
+
+echo chmod 644 ircensus /var/log/ircensus/ircensus.log
+chmod 644 /var/log/ircensus/ircensus.log
+
+echo chown -R ircensus /var/log/ircensus
+chown -R ircensus /var/log/ircensus
 
 echo chmod u+x /etc/init.d/ircensus
 chmod u+x /etc/init.d/ircensus
