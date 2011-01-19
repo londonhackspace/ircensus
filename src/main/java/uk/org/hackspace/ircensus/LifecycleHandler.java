@@ -9,7 +9,6 @@ class LifecycleHandler extends AbstractIrcHandler implements IrcHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(LifecycleHandler.class);
 
-  private static final String CHANNELS_COMMAND = "channels";
   private static final String EXIT_COMMAND = "exit";
 
   private final String nickname;
@@ -72,17 +71,7 @@ class LifecycleHandler extends AbstractIrcHandler implements IrcHandler {
 
   @Override
   public String executeCommand(String method, String[] tokens, String sender) {
-    if (method.equals(CHANNELS_COMMAND)) {
-      String[] channelNames = ircClient.getChannels();
-      StringBuilder response = new StringBuilder("I am in " + channelNames.length + " channels: ");
-      for (int i = 0; i < channelNames.length; ++i) {
-        response.append(channelNames[i] + " ");
-      }
-      LOG.debug("Asked for channels by {} - responded with: {}", sender, response);
-      return response.toString();
-    }
-
-    if (method.equals(EXIT_COMMAND)) {
+    if (EXIT_COMMAND.equals(method)) {
       LOG.warn("Exiting on command from {}", sender);
       System.exit(0);
     }

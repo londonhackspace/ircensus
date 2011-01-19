@@ -7,6 +7,7 @@ class ChannelControlHandler extends AbstractIrcHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(ChannelControlHandler.class);
 
+  private static final String CHANNELS_COMMAND = "channels";
   private static final String JOIN_COMMAND = "join";
   private static final String LEAVE_COMMAND = "leave";
 
@@ -21,6 +22,8 @@ class ChannelControlHandler extends AbstractIrcHandler {
       response = commandJoinChannel(tokens);
     } else if (LEAVE_COMMAND.equals(method)) {
       response = commandLeaveChannel(tokens);
+    } else if (CHANNELS_COMMAND.equals(method)) {
+      response = commandChannels();
     }
     return response;
   }
@@ -61,6 +64,16 @@ class ChannelControlHandler extends AbstractIrcHandler {
       LOG.debug(response);
     }
     return response;
+  }
+
+  private String commandChannels() {
+    String[] channelNames = ircClient.getChannels();
+    StringBuilder response = new StringBuilder("I am in " + channelNames.length + " channels: ");
+    for (int i = 0; i < channelNames.length; ++i) {
+      response.append(channelNames[i] + " ");
+    }
+    LOG.debug("Asked for channels - responded with: {}", response);
+    return response.toString();
   }
 
 }
