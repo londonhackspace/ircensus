@@ -13,17 +13,11 @@ class ChannelControlHandler extends AbstractIrcHandler {
 
     @Override
     public String executeCommand(String method, String[] tokens, String sender) {
-        String response;
+        String response = null;
         if ("join".equals(method)) {
             response = commandJoinChannel(tokens);
         } else if ("leave".equals(method)) {
             response = commandLeaveChannel(tokens);
-        } else if ("channels".equals(method)) {
-            response = commandChannels();
-            LOG.debug(response);
-        } else {
-            response = "Unrecognized command: " + method;
-            LOG.debug(response);
         }
         return response;
     }
@@ -55,22 +49,6 @@ class ChannelControlHandler extends AbstractIrcHandler {
             response = "Usage: leave <channel>";
             LOG.debug(response);
         }
-        return response;
-    }
-
-    private String commandChannels() {
-        StringBuilder builder = new StringBuilder("Channels: ");
-        String[] channels = ircClient.getChannels();
-        boolean first = true;
-        for (String channel : channels) {
-            if (first) {
-                first = false;
-            } else {
-                builder.append(", ");
-            }
-            builder.append(channel);
-        }
-        String response = builder.toString();
         return response;
     }
 

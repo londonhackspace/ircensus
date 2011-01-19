@@ -75,6 +75,7 @@ public class IrcClient extends PircBot {
                 if (response != null) {
                     sendMessage(sender, response);
                     LOG.info("Command: '{}' from <{}>, replied: {}", new Object[] { message, sender, response });
+                    break;
                 }
             }
         }
